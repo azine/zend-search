@@ -1,23 +1,45 @@
 {
     "name": "excelwebzone/zend-search",
-    "description": "Zend Framework (Search Lucene)",
-    "keywords": ["zend framework", "oops"],
-    "homepage": "https://github.com/excelwebzone/zend-search",
+    "description": "Maintained Zend Search Lucene fork used by Azine applications.",
+    "keywords": [
+        "full-text search",
+        "lucene",
+        "php"
+    ],
+    "homepage": "https://github.com/azine/zend-search",
     "type": "library",
-    "license": "MIT",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Michael H. Arieli",
-            "email": "excelwebzone@gmail.com",
-            "homepage": "http://excelwebzone.com/"
+            "email": "excelwebzone@gmail.com"
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": "^8.5",
+        "ext-iconv": "*",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.5"
     },
     "autoload": {
         "psr-0": {
             "Zend\\Search": ""
         }
-    }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ZendSearch\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "lint": "find Zend -name '*.php' -print0 | xargs -0 -n1 php -l",
+        "test": "phpunit -c phpunit.xml.dist"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
