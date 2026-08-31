@@ -56,10 +56,13 @@ final class LuceneSmokeTest extends TestCase
         $document->addField(Field::keyword('identifier', '42'));
         $document->addField(Field::text('title', 'Stored title'));
 
-        self::assertTrue($document->hasField('identifier'));
-        self::assertTrue($document->hasField('title'));
+        self::assertSame(['identifier', 'title'], $document->getFieldNames());
+        self::assertTrue(isset($document->identifier));
+        self::assertTrue(isset($document->title));
         self::assertSame('42', $document->getFieldValue('identifier'));
         self::assertSame('Stored title', $document->getFieldValue('title'));
+        self::assertSame('42', $document->identifier);
+        self::assertSame('Stored title', $document->title);
     }
 
     private function removeDirectory(string $directory): void
