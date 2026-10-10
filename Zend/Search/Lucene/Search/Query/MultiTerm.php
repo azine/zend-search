@@ -340,12 +340,15 @@ class MultiTerm extends AbstractQuery
             $docFreqs[] = $reader->docFreq($term);
             $ids[]      = $id; // Used to keep original order for terms with the same selectivity and omit terms comparison
         }
+        // Parent boolean queries may already have initialized weights using
+        // these term IDs. Sort a local traversal list, preserving that mapping.
+        $orderedTerms = $this->_terms;
         array_multisort($docFreqs, SORT_ASC, SORT_NUMERIC,
                         $ids,      SORT_ASC, SORT_NUMERIC,
-                        $this->_terms);
+                        $orderedTerms);
 
         $docsFilter = new Lucene\Index\DocsFilter();
-        foreach ($this->_terms as $termId => $term) {
+        foreach ($orderedTerms as $term) {
             $termDocs = $reader->termDocs($term, $docsFilter);
         }
         // Treat last retrieved docs vector as a result set
