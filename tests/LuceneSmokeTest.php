@@ -8,6 +8,10 @@ use PHPUnit\Framework\TestCase;
 use Zend\Search\Lucene\Document;
 use Zend\Search\Lucene\Document\Field;
 use Zend\Search\Lucene\Lucene;
+use Zend\Search\Lucene\Index\Term;
+use Zend\Search\Lucene\Search\Query\Boolean as BooleanQuery;
+use Zend\Search\Lucene\Search\Query\MultiTerm;
+use Zend\Search\Lucene\Search\Query\Term as TermQuery;
 
 final class LuceneSmokeTest extends TestCase
 {
@@ -63,6 +67,32 @@ final class LuceneSmokeTest extends TestCase
         self::assertSame('Stored title', $document->getFieldValue('title'));
         self::assertSame('42', $document->identifier);
         self::assertSame('Stored title', $document->title);
+    }
+
+    public function testNestedConjunctionPreservesTermIdsAndWeights(): void
+    {
+        $index = Lucene::create($this->indexDirectory);
+        foreach (['common rare', 'common', 'common'] as $body) {
+            $document = new Document();
+            $document->addField(Field::text('body', $body));
+            $document->addField(Field::keyword('type', 'job'));
+            $index->addDocument($document);
+        }
+        $index->commit();
+
+        // Optimizing boolean queries can leave gaps where prohibited terms were
+        // removed. Parent queries initialize weights before child execution.
+        $terms = [1 => new Term('common', 'body'), 3 => new Term('rare', 'body')];
+        $conjunction = new MultiTerm($terms);
+        $query = new BooleanQuery([$conjunction, new TermQuery(new Term('job', 'type'))], [true, true]);
+        $query->execute($index);
+
+        self::assertSame($terms, $conjunction->getTerms());
+        self::assertSame([0], array_keys($query->matchedDocs()));
+        $score = $query->score(0, $index);
+        self::assertGreaterThan(0, $score);
+        $query->execute($index);
+        self::assertSame($score, $query->score(0, $index));
     }
 
     private function removeDirectory(string $directory): void
