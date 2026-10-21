@@ -4,7 +4,7 @@ This repository is the maintained `excelwebzone/zend-search` fork used by Azine 
 
 ## Requirements
 
-- PHP 8.5
+- PHP 8.5.12+
 - `ext-iconv`
 - `ext-mbstring`
 

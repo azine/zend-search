@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   tests:
-    name: PHP 8.5 / Zend Search compatibility
+    name: PHP 8.5.12 / Zend Search compatibility
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -20,7 +20,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.5'
+          php-version: '8.5.12'
           coverage: none
           extensions: iconv, mbstring
           tools: composer:v2
